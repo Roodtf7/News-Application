@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}{{ publisher.name }}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <nav class="nav-bar">
+        <a href="{% url 'article-list' %}?type=publishers" class="btn-link">← Back to Publishers</a>
+        {% if is_editor %}
+        <a href="{% url 'add-editor' publisher.id %}" class="btn-link">Add Editor</a>
+        {% endif %}
+
+
+        <div style="margin-left: auto;">
+            {% if subscription %}
+            <span class="meta-text" style="font-size: 0.9rem; margin-right: 1rem;">Already Subscribed</span>
+            <a href="{% url 'unsubscribe' subscription.id %}" class="danger-link"
+                style="font-size: 0.9rem;">Unsubscribe</a>
+            {% else %}
+            <form action="{% url 'subscribe' %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="publisher_id" value="{{ publisher.id }}">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="btn-primary">Subscribe</button>
+            </form>
+            {% endif %}
+        </div>
+    </nav>
+
+    <h1 class="mb-2">{{ publisher.name }}</h1>
+
+    <div class="page-header">
+        <h2 class="mb-1">Publisher Content</h2>
+    </div>
+
+    <!-- Articles Section -->
+    <h3 class="mb-1">Articles</h3>
+    {% if articles %}
+    {% for article in articles %}
+    <div class="article-card">
+        <h3><a href="{% url 'article-detail' article.id %}">{{ article.title }}</a></h3>
+        <p class="meta-text">{{ article.body|truncatewords:20 }}...</p>
+        <p class="meta-text" style="font-size: 0.85rem;">
+            By {{ article.author.username }} • {{ article.published_at|date:"F j, Y" }}
+        </p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="mb-2 meta-text">No articles published yet.</p>
+    {% endif %}
+
+    <!-- Newsletters Section -->
+    <h3 class="mb-1 mt-2">Newsletters</h3>
+    {% if newsletters %}
+    {% for newsletter in newsletters %}
+    <div class="article-card">
+        <h3><a href="{% url 'newsletter-detail' newsletter.id %}">{{ newsletter.title }}</a></h3>
+        <p class="meta-text">{{ newsletter.body|truncatewords:20 }}...</p>
+        <p class="meta-text" style="font-size: 0.85rem;">
+            By {{ newsletter.author.username }} • {{ newsletter.published_at|date:"F j, Y" }}
+        </p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="mb-2 meta-text">No newsletters yet.</p>
+    {% endif %}
+
+    <hr style="border-color: var(--glass-border); margin: 2rem 0;">
+
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 250px;">
+            <h3 class="mb-1">Editors</h3>
+            {% if publisher.editors.all %}
+            <ul class="glass-list">
+                {% for editor in publisher.editors.all %}
+                <li style="padding: 0.5rem 1rem;">{{ editor.username }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="meta-text">No editors listed.</p>
+            {% endif %}
+        </div>
+
+        <div style="flex: 1; min-width: 250px;">
+            <h3 class="mb-1">Journalists</h3>
+            {% if publisher.journalists.all %}
+            <ul class="glass-list">
+                {% for journalist in publisher.journalists.all %}
+                <li style="padding: 0.5rem 1rem;">{{ journalist.username }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="meta-text">No journalists listed.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

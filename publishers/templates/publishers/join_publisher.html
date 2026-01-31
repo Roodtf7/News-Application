@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Join {{ publisher.name }}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 600px; margin: 0 auto;">
+    <nav class="mb-2">
+        <a href="{% url 'publisher-detail' publisher.id %}" class="btn-link">← Back to {{ publisher.name }}</a>
+    </nav>
+
+    <h1 class="mb-2">Join {{ publisher.name }}</h1>
+
+    <div class="page-header mb-2">
+        <p class="meta-text">
+            By joining this publisher, you will be authorized to submit articles and newsletters for review by their
+            editorial team.
+        </p>
+    </div>
+
+    <p class="mb-2">Are you sure you want to join <strong>{{ publisher.name }}</strong> as a journalist?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="button-row">
+            <button type="submit" style="flex: 2;">Confirm & Join</button>
+            <a href="{% url 'publisher-detail' publisher.id %}" class="secondary-button"
+                style="flex: 1; margin-top: 0;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

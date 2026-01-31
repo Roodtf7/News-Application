@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px;">
+    <nav class="mb-2">
+        <a href="{% url 'article-list' %}" class="btn-link">← Back to Articles</a>
+    </nav>
+
+    <h1 style="font-size: 2.5rem; padding-bottom: 0.5rem;">{{ article.title }}</h1>
+
+    <div class="page-header">
+        <p class="meta-text">
+            By <strong style="color: var(--text-primary);">{{ article.author.username }}</strong>
+            {% if article.publisher %} <span style="opacity: 0.7;">• {{ article.publisher.name }}</span>{% endif %}
+            {% if article.is_independent %} <span style="color: var(--accent-primary);">• Independent</span>{% endif %}
+        </p>
+        <p class="meta-text" style="font-size: 0.9rem;">
+            Published: {{ article.published_at|date:"F j, Y"|default:"Pending Approval" }}
+        </p>
+    </div>
+
+    <div class="article-body">
+        {{ article.body|linebreaks }}
+    </div>
+
+    {% if user.role == "editor" or user.role == "journalist" %}
+    {% if user.role == "editor" or article.author == user %}
+    <div class="article-actions">
+        <a href="{% url 'update-article' article.id %}" class="btn-link">Edit Article</a>
+        <a href="{% url 'delete-article' article.id %}" class="danger-link">Delete Article</a>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

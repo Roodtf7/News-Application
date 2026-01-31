@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Register - News App{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="glass-card" style="max-width: 500px;">
+    <h2 style="text-align: center; margin-bottom: 2rem;">Register</h2>
+    <p class="meta-text mb-2" style="text-align: center;">Choose a role to register for. You can register for multiple
+      roles using the same details!</p>
+
+    {% if messages %}
+    <div class="messages mb-2">
+      {% for message in messages %}
+      <p
+        style="color: {% if message.tags == 'error' %}var(--error){% else %}var(--success){% endif %}; text-align: center;">
+        {{ message }}
+      </p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" class="text-input" required
+          value="{{ request.POST.username }}">
+      </div>
+
+      <div class="form-group">
+        <label for="id_password1">Password</label>
+        <input type="password" name="password1" id="id_password1" class="text-input" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_password2">Confirm Password</label>
+        <input type="password" name="password2" id="id_password2" class="text-input" required>
+      </div>
+
+      <div class="form-group">
+        <label for="role_select">Register As</label>
+        <select name="role" id="role_select" class="text-input" style="width: 100%;" required>
+          <option value="" disabled selected>Select your role...</option>
+          <option value="reader">Reader</option>
+          <option value="journalist">Journalist</option>
+          <option value="editor">Editor</option>
+        </select>
+      </div>
+
+      <button type="submit" class="full-width mt-1">Register</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+      Already have an account? <a href="{% url 'login' %}">Log in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

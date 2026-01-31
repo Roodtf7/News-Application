@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Edit Article - {{ article.title }}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px;">
+    <nav class="mb-2">
+        <a href="{% url 'article-detail' article.id %}" class="btn-link">← Back to Article</a>
+    </nav>
+
+    <h1 class="mb-2">Edit Article</h1>
+
+    <p class="meta-text mb-2">
+        Update the content of your article. Note: If this was a publisher-approved article, editing it might require
+        re-approval depending on system policy.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group mb-1">
+            <label for="title">Article Title</label>
+            <input type="text" name="title" id="title" class="text-input" value="{{ article.title }}"
+                placeholder="Enter article title..." required>
+        </div>
+
+        <div class="form-group mb-1">
+            <label for="content">Content</label>
+            <textarea name="content" id="content" class="text-area" placeholder="Write your article content here..."
+                rows="15" required>{{ article.body }}</textarea>
+        </div>
+
+        <div class="button-row mt-2">
+            <button type="submit" style="flex: 2;">Update Article</button>
+            <a href="{% url 'article-detail' article.id %}" class="secondary-button" style="flex: 1;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

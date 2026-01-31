@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Publishers{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <nav class="nav-bar">
+        <a href="{% url 'article-list' %}" class="btn-link">← Back to Articles</a>
+        <div class="header-actions">
+            {% if user.role == "editor" %}
+            <a href="{% url 'create-publisher' %}" class="btn-link">Create Publisher</a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="danger-link">Logout</a>
+        </div>
+    </nav>
+
+    <h1 class="mb-2">Publishers</h1>
+
+    {% if user.role == "editor" or user.role == "journalist" %}
+    {% if user_publishers %}
+    <h2 class="mb-1">My Publishers</h2>
+    <ul class="glass-list mb-2">
+        {% for publisher in user_publishers %}
+        <li>
+            <a href="{% url 'publisher-detail' publisher.id %}">{{ publisher.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endif %}
+
+    <h2 class="mb-1">All Publishers</h2>
+    {% if publishers %}
+    <ul class="glass-list">
+        {% for publisher in publishers %}
+        <li>
+            <a href="{% url 'publisher-detail' publisher.id %}">{{ publisher.name }}</a>
+            {% if user.role == "journalist" and publisher not in user_publishers %}
+            <a href="{% url 'join-publisher' publisher.id %}" class="btn-link">Join</a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No publishers yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

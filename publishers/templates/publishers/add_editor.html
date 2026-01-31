@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Add Editor - {{ publisher.name }}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 600px; margin: 0 auto;">
+    <nav class="mb-2">
+        <a href="{% url 'publisher-detail' publisher.id %}" class="btn-link">← Back to Publisher Details</a>
+    </nav>
+
+    <h1 class="mb-2">Add Editor</h1>
+    <p class="meta-text mb-2">Select a registered editor to add to <strong>{{ publisher.name }}</strong>.</p>
+
+    {% if error %}
+    <p class="error-text mb-2"
+        style="color: var(--error); padding: 0.5rem; background: rgba(255, 71, 87, 0.1); border-radius: 8px;">
+        {{ error }}
+    </p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group mb-2">
+            <label for="editor_select">Choose Editor</label>
+            {% if available_editors %}
+            <select name="editor_id" id="editor_select" class="text-input" required>
+                <option value="">Select an editor...</option>
+                {% for editor in available_editors %}
+                <option value="{{ editor.id }}">{{ editor.username }} ({{ editor.email }})</option>
+                {% endfor %}
+            </select>
+            {% else %}
+            <div class="glass-card" style="padding: 1rem; border: 1px dashed var(--glass-border);">
+                <p class="meta-text" style="text-align: center;">No other potential editors found.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if available_editors %}
+        <button type="submit" class="full-width">Add Editor to Publisher</button>
+        {% endif %}
+
+        <a href="{% url 'publisher-detail' publisher.id %}" class="btn-link text-center full-width"
+            style="display: block; margin-top: 1rem;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

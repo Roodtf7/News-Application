@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Edit Newsletter{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px;">
+    <nav class="mb-2">
+        <a href="{% url 'newsletter-detail' newsletter.id %}" class="btn-link">← Back to Newsletter</a>
+    </nav>
+
+    <h1 class="mb-2">Edit Newsletter</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group mb-1">
+            <label>Newsletter Title</label>
+            <input type="text" name="title" class="text-input" value="{{ newsletter.title }}" required>
+        </div>
+
+        <div class="form-group mb-1">
+            <label>Content</label>
+            <textarea name="content" class="text-area" rows="15" required>{{ newsletter.body }}</textarea>
+        </div>
+
+        <div class="button-row mt-2">
+            <button type="submit" style="flex: 2;">Update Newsletter</button>
+            <a href="{% url 'newsletter-detail' newsletter.id %}" class="secondary-button" style="flex: 1;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

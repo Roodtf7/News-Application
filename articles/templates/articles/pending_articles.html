@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Pending Content - News App{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <h1 class="mb-2">Pending Content Approval</h1>
+    <p class="meta-text mb-2">Review and approve submissions from your journalists.</p>
+
+    <!-- PENDING ARTICLES SECTION -->
+    <h2 class="section-title mt-2">Pending Articles</h2>
+    {% if articles %}
+    <div class="article-grid">
+        {% for article in articles %}
+        <div class="glass-card mb-1">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h3 style="margin-bottom: 0.5rem;">{{ article.title }}</h3>
+                    <p class="meta-text">By {{ article.author.username }} | Publisher: {{ article.publisher.name }}</p>
+                    <p class="mt-1" style="opacity: 0.8;">{{ article.body|truncatewords:30 }}</p>
+                </div>
+                <div class="flex-column" style="gap: 0.5rem; min-width: 120px;">
+                    <a href="{% url 'approve-article' article.id %}" class="btn-primary text-center">Approve</a>
+                    <a href="{% url 'update-article' article.id %}" class="btn-link text-center">Edit Content</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="meta-text" style="padding: 2rem; text-align: center; background: var(--glass-bg); border-radius: 12px;">
+        No pending articles at this time.
+    </p>
+    {% endif %}
+
+    <!-- PENDING NEWSLETTERS SECTION -->
+    <h2 class="section-title mt-2">Pending Newsletters</h2>
+    {% if newsletters %}
+    <div class="article-grid">
+        {% for newsletter in newsletters %}
+        <div class="glass-card mb-1">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h3 style="margin-bottom: 0.5rem;">{{ newsletter.title }}</h3>
+                    <p class="meta-text">By {{ newsletter.author.username }} | Publisher: {{ newsletter.publisher.name
+                        }}</p>
+                    <p class="mt-1" style="opacity: 0.8;">{{ newsletter.body|truncatewords:30 }}</p>
+                </div>
+                <div class="flex-column" style="gap: 0.5rem; min-width: 120px;">
+                    <a href="{% url 'approve-newsletter' newsletter.id %}" class="btn-primary text-center">Approve</a>
+                    <a href="{% url 'update-newsletter' newsletter.id %}" class="btn-link text-center">Edit Content</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="meta-text" style="padding: 2rem; text-align: center; background: var(--glass-bg); border-radius: 12px;">
+        No pending newsletters at this time.
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

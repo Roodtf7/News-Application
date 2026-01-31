@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% block title %}News Feed{% endblock %}
+
+{% block content %}
+<div class="content-card">
+  <nav class="nav-bar">
+    <div>
+      {% if user.role == "journalist" %}
+      <a href="{% url 'create-article' %}" class="btn-link">Create Article</a>
+      {% endif %}
+
+      {% if user.role == "editor" %}
+      <a href="{% url 'pending-articles' %}" class="btn-link">Pending Articles</a>
+      {% endif %}
+    </div>
+    <div class="header-actions">
+      <span class="meta-text" style="margin-bottom: 0;">Role: <strong>{{ user.role|capfirst }}</strong></span>
+      <a href="{% url 'logout' %}" class="danger-link">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <h1>
+      <a href="?type=articles"
+        class="tab-link {% if content_type == 'articles' or not content_type %}active{% endif %}">
+        Articles
+      </a>
+      <a href="?type=newsletters" class="tab-link {% if content_type == 'newsletters' %}active{% endif %}">
+        Newsletters
+      </a>
+      <a href="?type=publishers" class="tab-link {% if content_type == 'publishers' %}active{% endif %}">
+        Publishers
+      </a>
+      <a href="?type=journalists" class="tab-link {% if content_type == 'journalists' %}active{% endif %}">
+        Journalists
+      </a>
+      <a href="?type=subscriptions" class="tab-link {% if content_type == 'subscriptions' %}active{% endif %}">
+        Subscriptions
+      </a>
+    </h1>
+  </div>
+
+  {% if content_type == "newsletters" %}
+  {# ----- NEWSLETTERS ----- #}
+  {% if user.role == "journalist" %}
+  <div class="mb-2">
+    <a href="{% url 'create-newsletter' %}" class="btn-link">Create Newsletter</a>
+    <div class="mt-2" style="margin-top: 1rem;">
+      <a href="?type=newsletters&filter=all" class="tab-link {% if filter_type == 'all' %}active{% endif %}">All
+        Newsletters</a>
+      <a href="?type=newsletters&filter=my" class="tab-link {% if filter_type == 'my' %}active{% endif %}">My
+        Newsletters</a>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if newsletters %}
+  {% for newsletter in newsletters %}
+  <div class="article-card">
+    <h3 class="mb-1">
+      <a href="{% url 'newsletter-detail' newsletter.id %}">{{ newsletter.title }}</a>
+    </h3>
+    <p class="meta-text">{{ newsletter.body|truncatewords:20 }}...</p>
+    <p class="meta-text" style="font-size: 0.9rem;">
+      <em>By <a href="?type=articles&author={{ newsletter.author.id }}">{{ newsletter.author.username }}</a></em>
+    </p>
+
+    {% if user == newsletter.author %}
+    <div class="mt-2" style="margin-top: 1rem; font-size: 0.9rem;">
+      <a href="{% url 'update-newsletter' newsletter.id %}" class="btn-link">Edit</a>
+      <a href="{% url 'delete-newsletter' newsletter.id %}" onclick="return confirm('Delete this newsletter?');"
+        class="danger-link">Delete</a>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <p>No newsletters yet.</p>
+  {% endif %}
+
+  {% elif content_type == "publishers" %}
+  {# ----- PUBLISHERS ----- #}
+  {% if user.role == "editor" or user.role == "journalist" %}
+  <div class="mb-2">
+    {% if user.role == "editor" %}
+    <a href="{% url 'create-publisher' %}" class="btn-link">Create Publisher</a>
+    {% endif %}
+  </div>
+  {% if user_publishers %}
+  <h2 class="mb-1">My Publishers</h2>
+  <ul class="glass-list mb-2">
+    {% for publisher in user_publishers %}
+    <li>
+      <a href="{% url 'publisher-detail' publisher.id %}">{{ publisher.name }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endif %}
+
+  <h2 class="mb-1">All Publishers</h2>
+  {% if publishers %}
+  <ul class="glass-list">
+    {% for publisher in publishers %}
+    <li>
+      <a href="{% url 'publisher-detail' publisher.id %}">{{ publisher.name }}</a>
+      {% if user.role == "journalist" and publisher not in user_publishers %}
+      <a href="{% url 'join-publisher' publisher.id %}" class="btn-link">Join</a>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No publishers yet.</p>
+  {% endif %}
+
+  {% elif content_type == "journalists" %}
+  {# ----- JOURNALISTS ----- #}
+  <h2 class="mb-1">Registered Journalists</h2>
+  <p class="meta-text mb-2">Click on a journalist to see their articles and newsletters.</p>
+  {% if journalists %}
+  <ul class="glass-list">
+    {% for journalist in journalists %}
+    <li>
+      <a href="?type=articles&author={{ journalist.id }}">{{ journalist.username }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No journalists registered yet.</p>
+  {% endif %}
+
+  {% elif content_type == "subscriptions" %}
+  {# ----- SUBSCRIPTIONS ----- #}
+  <div class="mb-2">
+    <a href="?type=subscriptions&sub_type=all"
+      class="tab-link {% if sub_type == 'all' or not sub_type %}active{% endif %}">All</a>
+    <a href="?type=subscriptions&sub_type=publisher"
+      class="tab-link {% if sub_type == 'publisher' %}active{% endif %}">Publishers</a>
+    <a href="?type=subscriptions&sub_type=journalist"
+      class="tab-link {% if sub_type == 'journalist' %}active{% endif %}">Journalists</a>
+  </div>
+
+  {% if subscriptions %}
+  <div class="grid-list">
+    {% for sub in subscriptions %}
+    <div class="article-card">
+      {% if sub.publisher %}
+      <h3>Publisher: {{ sub.publisher.name }}</h3>
+      <p class="meta-text">Subscribed to organization updates.</p>
+      <div class="mt-1">
+        <a href="{% url 'publisher-detail' sub.publisher.id %}" class="btn-link">View Publisher</a>
+      </div>
+      {% elif sub.journalist %}
+      <h3>Journalist: {{ sub.journalist.username }}</h3>
+      <p class="meta-text">Subscribed to individual articles.</p>
+      <div class="mt-1">
+        <a href="?type=articles&author={{ sub.journalist.id }}" class="btn-link">View Content</a>
+      </div>
+      {% endif %}
+      <div class="mt-1">
+        <form action="{% url 'unsubscribe' sub.id %}" method="POST" onsubmit="return confirm('Unsubscribe?');">
+          {% csrf_token %}
+          <button type="submit" class="danger-link"
+            style="background: none; border: none; padding: 0; cursor: pointer;">Unsubscribe</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No active subscriptions found.</p>
+  {% endif %}
+
+  {% else %}
+  {# ----- ARTICLES (DEFAULT) ----- #}
+  {% if selected_author %}
+  <div class="mb-2">
+    <h2>Content by {{ selected_author.username }}</h2>
+    <a href="?type=articles" class="btn-link">← Back to all articles</a>
+
+    {% if selected_author.id in subscribed_journalist_ids %}
+    <span class="meta-text" style="margin-left: 1rem;">Already Subscribed</span>
+    {% else %}
+    <form action="{% url 'subscribe' %}" method="POST" style="display: inline; margin-left: 1rem;">
+      {% csrf_token %}
+      <input type="hidden" name="journalist_id" value="{{ selected_author.id }}">
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit" class="btn-primary">Subscribe to {{ selected_author.username }}</button>
+    </form>
+    {% endif %}
+  </div>
+  {% elif user.role == "journalist" %}
+  <div class="mb-2">
+    <p>
+      <a href="?type=articles&filter=all"
+        class="tab-link {% if filter_type == 'all' or not filter_type %}active{% endif %}">All Articles</a>
+      <a href="?type=articles&filter=my" class="tab-link {% if filter_type == 'my' %}active{% endif %}">My Articles</a>
+    </p>
+  </div>
+  {% endif %}
+
+  {% if selected_author and newsletters %}
+  <h3 class="mb-1">Newsletters</h3>
+  {% for newsletter in newsletters %}
+  <div class="article-card">
+    <h3 class="mb-1"><a href="{% url 'newsletter-detail' newsletter.id %}">{{ newsletter.title }}</a></h3>
+    <p class="meta-text">{{ newsletter.body|truncatewords:20 }}...</p>
+    <p class="meta-text" style="font-size: 0.85rem;">{{ newsletter.published_at|date:"F j, Y" }}</p>
+  </div>
+  {% endfor %}
+  <h3 class="mb-1 mt-2">Articles</h3>
+  {% endif %}
+
+  {% if articles %}
+  {% for article in articles %}
+  <div class="article-card">
+    <h3 class="mb-1">
+      <a href="{% url 'article-detail' article.id %}">{{ article.title }}</a>
+    </h3>
+    <p class="meta-text">{{ article.body|truncatewords:20 }}...</p>
+    <p class="meta-text" style="font-size: 0.9rem;">
+      <em>By <a href="?type=articles&author={{ article.author.id }}">{{ article.author.username }}</a></em>
+      {% if article.publisher %} <span style="opacity: 0.7;">({{ article.publisher.name }})</span>{% endif %}
+      {% if article.is_independent %} <span style="color: var(--accent-primary);">[Independent]</span>{% endif %}
+      • <span style="opacity: 0.7;">{{ article.published_at|date:"F j, Y" }}</span>
+    </p>
+
+    {% if user.role == "editor" or user.role == "journalist" %}
+    {% if user.role == "editor" or article.author == user %}
+    <div class="mt-2" style="margin-top: 1rem; font-size: 0.9rem;">
+      <a href="{% url 'update-article' article.id %}" class="btn-link">Edit</a>
+      <a href="{% url 'delete-article' article.id %}" onclick="return confirm('Delete this article?');"
+        class="danger-link">Delete</a>
+    </div>
+    {% endif %}
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <p>No articles yet.</p>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

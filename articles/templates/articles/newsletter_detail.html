@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}{{ newsletter.title }}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px;">
+    <nav class="mb-2">
+        <a href="{% url 'article-list' %}?type=newsletters" class="btn-link">← Back to Newsletters</a>
+    </nav>
+
+    <h1 style="font-size: 2.5rem; padding-bottom: 0.5rem;">{{ newsletter.title }}</h1>
+
+    <div class="page-header">
+        <p class="meta-text">
+            By <strong style="color: var(--text-primary);">{{ newsletter.author.username }}</strong>
+        </p>
+        <p class="meta-text" style="font-size: 0.9rem;">
+            Published: {{ newsletter.published_at|date:"F j, Y" }}
+        </p>
+    </div>
+
+    <div class="article-body">
+        {{ newsletter.body|linebreaks }}
+    </div>
+
+    {% if user == newsletter.author %}
+    <div class="article-actions mt-2" style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+        <a href="{% url 'update-newsletter' newsletter.id %}" class="btn-link">Edit Newsletter</a>
+        <a href="{% url 'delete-newsletter' newsletter.id %}" class="danger-link"
+            onclick="return confirm('Delete this newsletter?');">Delete Newsletter</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Delete Newsletter - {{ newsletter.title }}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 600px; margin: 0 auto;">
+    <nav class="mb-2">
+        <a href="{% url 'newsletter-detail' newsletter.id %}" class="btn-link">← Back to Newsletter</a>
+    </nav>
+
+    <h1 class="mb-2">Delete Newsletter</h1>
+
+    <p class="mb-1">Are you sure you want to delete "<strong>{{ newsletter.title }}</strong>"?</p>
+    <p class="meta-text mb-2">This action is permanent and cannot be undone.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="button-row">
+            <button type="submit" style="background-color: var(--error); flex: 1;">Yes, Delete Newsletter</button>
+            <a href="{% url 'newsletter-detail' newsletter.id %}" class="secondary-button"
+                style="flex: 1; margin-top: 0;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

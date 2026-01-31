@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Create Publisher{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 600px;">
+    <nav class="mb-2">
+        <a href="{% url 'publisher-list' %}" class="btn-link">← Back to Publishers</a>
+    </nav>
+
+    <h1 class="mb-2">Create Publisher</h1>
+
+    <p class="meta-text mb-2">
+        Establish a new news organization. As the creator, you will automatically be assigned as an Editor.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group mb-1">
+            <label for="name">Organization Name</label>
+            <input type="text" name="name" id="name" class="text-input"
+                placeholder="e.g. Daily Bugle, Gotham Gazette..." required>
+        </div>
+
+        <div class="button-row mt-2">
+            <button type="submit" style="flex: 2;">Create Organization</button>
+            <a href="{% url 'publisher-list' %}" class="secondary-button" style="flex: 1;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

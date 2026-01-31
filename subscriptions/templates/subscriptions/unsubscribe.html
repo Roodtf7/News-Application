@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Unsubscribe{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 600px; margin: 0 auto;">
+    <h1>Confirm Unsubscribe</h1>
+    <p class="mb-2">Are you sure you want to unsubscribe from
+        {% if subscription.publisher %}
+        <strong>{{ subscription.publisher.name }}</strong>?
+        {% else %}
+        <strong>{{ subscription.journalist.username }}</strong>?
+        {% endif %}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button type="submit" class="btn-primary" style="background-color: var(--error-color);">Unsubscribe</button>
+            <a href="{% url 'subscription-list' %}" class="btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

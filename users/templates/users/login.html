@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - News App{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="glass-card">
+        <h2 style="text-align: center; margin-bottom: 2rem;">News Application</h2>
+
+        {% if request.GET.registered == 'success' %}
+        <p id="success-msg" style="color: var(--success); font-weight: bold; text-align: center;">Registration
+            successful!</p>
+        {% endif %}
+
+        <div id="error-container">
+            {% if messages %}
+            <div class="messages mb-2">
+                {% for message in messages %}
+                <p
+                    style="color: {% if message.tags == 'error' %}var(--error){% else %}var(--success){% endif %}; text-align: center;">
+                    {{ message }}
+                </p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="post" id="login-form">
+            {% csrf_token %}
+
+            <!-- STEP 1: CREDENTIALS -->
+            <div id="credentials-step">
+                <div class="form-group">
+                    <label for="id_username">Username</label>
+                    <input type="text" name="username" id="id_username" class="text-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password">Password</label>
+                    <input type="password" name="password" id="id_password" class="text-input" required>
+                </div>
+
+                <button type="button" id="verify-details-btn" class="full-width mt-1">Verify Details</button>
+            </div>
+
+            <!-- STEP 2: ROLE SELECTION (Initially Hidden) -->
+            <div id="role-step" style="display: none;">
+                <div class="form-group">
+                    <label for="role_select">Login As</label>
+                    <select name="role" id="role_select" class="text-input" style="width: 100%;" required>
+                        <!-- Populated via AJAX -->
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="button" id="back-btn" class="btn-link" style="flex: 1;">Back</button>
+                    <button type="submit" class="full-width" style="flex: 2;">Login</button>
+                </div>
+            </div>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+            New here? <a href="{% url 'register' %}">Register</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    const verifyBtn = document.getElementById('verify-details-btn');
+    const credentialsStep = document.getElementById('credentials-step');
+    const roleStep = document.getElementById('role-step');
+    const roleSelect = document.getElementById('role_select');
+    const errorContainer = document.getElementById('error-container');
+    const usernameInput = document.getElementById('id_username');
+    const passwordInput = document.getElementById('id_password');
+    const backBtn = document.getElementById('back-btn');
+
+    function showError(msg) {
+        errorContainer.innerHTML = `<p style="color: var(--error); text-align: center;">${msg}</p>`;
+    }
+
+    verifyBtn.addEventListener('click', async () => {
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+            showError("Please enter both username and password.");
+            return;
+        }
+
+        try {
+            const response = await fetch('{% url "verify-credentials" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Populate roles
+                roleSelect.innerHTML = '';
+                data.roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role;
+                    option.textContent = data.role_names[role];
+                    roleSelect.appendChild(option);
+                });
+
+                // Switch UI
+                credentialsStep.style.display = 'none';
+                roleStep.style.display = 'block';
+                errorContainer.innerHTML = '';
+            } else {
+                showError(data.error);
+            }
+        } catch (err) {
+            showError("An error occurred. Please try again.");
+        }
+    });
+
+    backBtn.addEventListener('click', () => {
+        credentialsStep.style.display = 'block';
+        roleStep.style.display = 'none';
+    });
+</script>
+{% endblock %}

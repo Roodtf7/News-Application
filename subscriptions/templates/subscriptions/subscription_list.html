@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}My Subscriptions{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <nav class="nav-bar">
+        <a href="{% url 'article-list' %}" class="btn-link">← Articles</a>
+    </nav>
+    <h1>My Subscriptions</h1>
+    <p class="meta-text mb-2">Manage your subscriptions to publishers and journalists.</p>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if subscriptions %}
+    <div class="grid-list">
+        {% for subscription in subscriptions %}
+        <div class="article-card">
+            {% if subscription.publisher %}
+            <h3>Publisher: {{ subscription.publisher.name }}</h3>
+            <p class="meta-text">Subscribed to organization updates.</p>
+            {% elif subscription.journalist %}
+            <h3>Journalist: {{ subscription.journalist.username }}</h3>
+            <p class="meta-text">Subscribed to individual articles.</p>
+            {% endif %}
+
+            <div class="mt-1">
+                <a href="{% url 'unsubscribe' subscription.id %}" class="btn-secondary">Unsubscribe</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>You haven't subscribed to any publishers or journalists yet.</p>
+        <a href="{% url 'article-list' %}?type=publishers" class="btn-primary mt-1">Browse Publishers</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

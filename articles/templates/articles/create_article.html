@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Create Article{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width: 800px;">
+    <nav class="mb-2">
+        <a href="{% url 'article-list' %}" class="btn-link">← Back to Articles</a>
+    </nav>
+
+    <h2 class="mb-2">Create Article</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" class="text-input" placeholder="Enter article title..." required>
+        </div>
+
+        <div class="form-group">
+            <label>Content</label>
+            <textarea name="content" class="text-area" placeholder="Write your article..." rows="15"
+                required></textarea>
+        </div>
+
+        <div class="form-group-glass">
+            <label class="mb-1">Publishing Options</label>
+
+            <div class="mb-1">
+                <input type="radio" name="publish_type" value="independent" id="independent" checked
+                    style="width: auto;">
+                <label for="independent" style="display: inline;">Publish Independently (visible immediately)</label>
+            </div>
+
+            {% if publishers %}
+            <div>
+                <input type="radio" name="publish_type" value="publisher" id="publisher" style="width: auto;">
+                <label for="publisher" style="display: inline;">Submit to Publisher (requires approval)</label>
+            </div>
+
+            <div id="publisher_select_container" class="mt-2" style="margin-left: 1.5rem; display: none;">
+                <select name="publisher" id="publisher_select" class="text-input">
+                    <option value="">Select a publisher...</option>
+                    {% for publisher in publishers %}
+                    <option value="{{ publisher.id }}">{{ publisher.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <script>
+                const pubRadio = document.getElementById('publisher');
+                const indRadio = document.getElementById('independent');
+                const selectContainer = document.getElementById('publisher_select_container');
+
+                function toggleSelect() {
+                    selectContainer.style.display = pubRadio.checked ? 'block' : 'none';
+                }
+
+                pubRadio.addEventListener('change', toggleSelect);
+                indRadio.addEventListener('change', toggleSelect);
+            </script>
+            {% else %}
+            <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.7;">
+                <em>No publishers available. <a href="{% url 'publisher-list' %}" class="btn-link">Join a publisher</a>
+                    to submit for
+                    approval.</em>
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="button-row mt-2">
+            <button type="submit" style="flex: 2;">Publish Article</button>
+            <a href="{% url 'article-list' %}" class="secondary-button" style="flex: 1;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
