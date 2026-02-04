@@ -16,7 +16,11 @@ from pathlib import Path
 
 @permission_required("articles.view_article")
 def pending_articles(request):
-    """View articles and newsletters waiting for approval."""
+    """
+    View articles and newsletters waiting for approval.
+    
+    Only editors can see content from their publishers.
+    """
     if request.user.role == "editor":
         # Get all publishers this editor belongs to
         user_publishers = Publisher.objects.filter(editors=request.user)
