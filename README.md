@@ -5,13 +5,19 @@ This is a Django-based News Application that models a simple news platform. Jour
 
 ---
 
+## Database Configuration
+- **Local Development**: Uses MySQL as the primary database. Follow the steps below for local setup.
+- **Docker Deployment**: Uses SQLite for simplicity and portability. This is automatically configured via the `USE_SQLITE=True` environment variable in the Dockerfile.
+
+---
+
 # STEP 1 – Install Required Software
 
 ### 1.1 Install Python
 
 1. Open your web browser
 2. Go to https://www.python.org/downloads/
-3. Download **Python 3.10 or newer**
+3. Download **Python 3.11 or newer**
 4. During installation:
    - Tick **“Add Python to PATH”**
    - Click **Install**
@@ -163,6 +169,36 @@ python manage.py runserver
 ### 11. Access the application
 Open your web browser and navigate to http://localhost:8000 to access the application.
 
+
+---
+
+## OPTIONAL: Docker Setup
+If you prefer to run the application using Docker, you can do so without setting up MySQL locally. The Docker container is pre-configured to use SQLite.
+
+1. **Ensure Docker is installed** on your system.
+2. **Build the Docker image**:
+   ```bash
+   docker build -t news-app .
+   ```
+3. **Run the container**:
+   ```bash
+   docker run -p 8000:8000 news-app
+   ```
+4. **Access the application** at http://localhost:8000.
+
+---
+
+## Documentation
+Technical documentation for this project is generated using Sphinx. 
+The generated HTML documentation can be found at:
+`docs/_build/html/index.html`
+
+---
+
+## Security Disclaimer
+**IMPORTANT**: The database credentials (e.g., `password123`) and `SECRET_KEY` provided in this repository are for **local development and demonstration purposes only**. 
+- Secrets should **never** be committed to public repositories in a production environment.
+- Always use environment variables for sensitive configuration.
 
 ---
 
