@@ -50,8 +50,9 @@ class Article(models.Model):
 
     def approve(self, editor):
         """
-        Approve the article.
-        Business rule: only an editor can approve.
+        Approve the article and set the publication date.
+        
+        :param editor: The user (editor) who approves the article.
         """
         self.approved = True
         self.approved_by = editor
