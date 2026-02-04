@@ -71,8 +71,8 @@ git --version
 # STEP 2 – Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd news_application
+git clone https://github.com/Roodtf7/News-Application.git
+cd News-Application
 ```
 
 # STEP 3. Create and activate a virtual environment
